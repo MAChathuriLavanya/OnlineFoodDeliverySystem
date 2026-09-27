@@ -150,13 +150,6 @@
             font-size: 12px;
             font-weight: bold;
         }
-        .demo-credentials {
-            background: #eccc68;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
         .toggle-link {
             margin-top: 15px;
             text-align: center;
@@ -185,12 +178,6 @@
     <!-- SECTION 1A: LOGIN FORM -->
     <div id="loginSection" class="card">
         <h2>System Login</h2>
-
-        <div class="demo-credentials">
-            <strong>🔑 Demo Credentials for Testing / Viva:</strong><br>
-            • <strong>Admin:</strong> Username: <code>admin</code> | Password: <code>admin123</code><br>
-            • <strong>Customer:</strong> Username: <code>U001</code> | Password: <code>123</code>
-        </div>
 
         <form id="loginForm">
             <div class="form-group">
@@ -264,14 +251,14 @@
                 <button type="submit" class="btn-action">Register New User</button>
             </form>
             <div id="userMsg" class="msg"></div>
-
+            
             <h3 style="margin-top: 20px;">Registered Users Database</h3>
             <table id="userTable">
                 <thead>
-                <tr><th>User ID</th><th>Name</th><th>Role</th><th>Action</th></tr>
+                    <tr><th>User ID</th><th>Name</th><th>Role</th><th>Action</th></tr>
                 </thead>
                 <tbody id="userTableBody">
-                <!-- Populated via JS -->
+                    <!-- Populated via JS -->
                 </tbody>
             </table>
         </div>
@@ -307,12 +294,12 @@
             <h3 style="margin-top: 20px;">Current Food Menu</h3>
             <table id="adminMenuTable">
                 <thead>
-                <tr><th>Item ID</th><th>Name</th><th>Price</th><th>Category</th><th>Action</th></tr>
+                    <tr><th>Item ID</th><th>Name</th><th>Price</th><th>Category</th><th>Action</th></tr>
                 </thead>
                 <tbody>
-                <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td><td><button class="btn-delete" onclick="deleteFood(this, 'F001')">Delete</button></td></tr>
-                <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td><td><button class="btn-delete" onclick="deleteFood(this, 'F002')">Delete</button></td></tr>
-                <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td><td><button class="btn-delete" onclick="deleteFood(this, 'F003')">Delete</button></td></tr>
+                    <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td><td><button class="btn-delete" onclick="deleteFood(this, 'F001')">Delete</button></td></tr>
+                    <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td><td><button class="btn-delete" onclick="deleteFood(this, 'F002')">Delete</button></td></tr>
+                    <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td><td><button class="btn-delete" onclick="deleteFood(this, 'F003')">Delete</button></td></tr>
                 </tbody>
             </table>
         </div>
@@ -322,10 +309,10 @@
             <h2>Admin: All Orders Monitoring <span class="role-badge">ADMIN</span></h2>
             <table id="adminOrderTable">
                 <thead>
-                <tr><th>Order ID</th><th>Customer ID</th><th>Item</th><th>Status</th><th>Action</th></tr>
+                    <tr><th>Order ID</th><th>Customer ID</th><th>Item</th><th>Status</th><th>Action</th></tr>
                 </thead>
                 <tbody>
-                <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
+                    <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
                 </tbody>
             </table>
         </div>
@@ -338,12 +325,12 @@
             <h2>Customer: Available Food Menu <span class="role-badge">CUSTOMER</span></h2>
             <table id="customerMenuTable">
                 <thead>
-                <tr><th>Item ID</th><th>Name</th><th>Price</th><th>Category</th></tr>
+                    <tr><th>Item ID</th><th>Name</th><th>Price</th><th>Category</th></tr>
                 </thead>
                 <tbody>
-                <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td></tr>
-                <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td></tr>
-                <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td></tr>
+                    <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td></tr>
+                    <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td></tr>
+                    <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td></tr>
                 </tbody>
             </table>
         </div>
@@ -367,10 +354,10 @@
             <h3 style="margin-top: 20px;">My Orders History</h3>
             <table id="customerOrderTable">
                 <thead>
-                <tr><th>Order ID</th><th>Item</th><th>Status</th></tr>
+                    <tr><th>Order ID</th><th>Item</th><th>Status</th></tr>
                 </thead>
                 <tbody>
-                <tr><td>ORD1001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td></tr>
+                    <tr><td>ORD1001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td></tr>
                 </tbody>
             </table>
         </div>
@@ -399,7 +386,7 @@
         document.getElementById('regMsg').innerText = "";
     }
 
-    // REAL-TIME USER ID VALIDATION (BEFORE CLICKING BUTTON)
+    // REAL-TIME USER ID VALIDATION
     const regUserInput = document.getElementById('regUser');
     const liveUserError = document.getElementById('liveUserError');
     const regSubmitBtn = document.getElementById('regSubmitBtn');
@@ -461,7 +448,7 @@
         document.getElementById('regMsg').innerText = `Registration successful! Redirecting to login...`;
         document.getElementById('customerRegisterForm').reset();
         liveUserError.innerText = '';
-
+        
         setTimeout(() => {
             showLoginForm();
             document.getElementById('loginUser').value = id;
