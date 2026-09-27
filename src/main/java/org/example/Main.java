@@ -1,17 +1,38 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.example.model.Admin;
+import org.example.model.Customer;
+import org.example.model.User;
+import org.example.service.UserService;
+
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        UserService userService = new UserService();
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        System.out.println("=== Adding Sample Users ===");
+
+        // Sample Customer and Admin objects
+        Customer customer1 = new Customer("U001", "kamal", "pas123", "kamal@gmail.com", "No 12, Colombo");
+        Admin admin1 = new Admin("A001", "nimal_admin", "admin123", "admin@food.com", "IT Dept");
+
+        // Save users to users.txt
+        userService.registerUser(customer1);
+        userService.registerUser(admin1);
+
+        System.out.println("\n=== Reading All Users From File ===");
+        List<User> users = userService.getAllUsers();
+        for (User user : users) {
+            System.out.println("ID: " + user.getUserId() + " | Name: " + user.getUsername() + " | Role: " + user.getRole());
+        }
+
+        System.out.println("\n=== Testing Login ===");
+        User loggedInUser = userService.login("kamal", "pas123");
+        if (loggedInUser != null) {
+            System.out.println("Login Successful! Welcome " + loggedInUser.getUsername());
+        } else {
+            System.out.println("Login Failed!");
         }
     }
 }
