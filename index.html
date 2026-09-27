@@ -27,10 +27,26 @@
             border-radius: 8px;
             text-align: center;
             margin-bottom: 20px;
+            position: relative;
+        }
+        .logout-btn {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background-color: #2f3542;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .logout-btn:hover {
+            background-color: #57606f;
         }
         .card {
             background: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             margin-bottom: 20px;
@@ -42,7 +58,7 @@
             padding-bottom: 8px;
         }
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
         label {
             display: block;
@@ -55,23 +71,41 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        button {
+        button.btn-primary {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+        button.btn-primary:hover {
+            background-color: #e84118;
+        }
+        button.btn-action {
             background-color: #2ed573;
             color: white;
             border: none;
             padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
         }
-        button:hover {
+        button.btn-action:hover {
             background-color: #26af5f;
         }
         .btn-delete {
             background-color: #ff4757;
+            color: white;
+            border: none;
             font-size: 13px;
             padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
         }
         .btn-delete:hover {
             background-color: #ff6b81;
@@ -95,6 +129,17 @@
             font-weight: bold;
             margin-top: 10px;
         }
+        .hidden {
+            display: none !important;
+        }
+        .role-badge {
+            background-color: #ffa502;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -102,138 +147,204 @@
 <div class="container">
     <header>
         <h1>🍔 Online Food Delivery System</h1>
-        <p>Interactive Front-end Web Dashboard with Admin Management</p>
+        <p id="headerSub">Role-based Access Control System</p>
+        <button id="logoutBtn" class="logout-btn hidden" onclick="logout()">Logout</button>
     </header>
 
-    <!-- User Management Section -->
-    <div class="card">
-        <h2>1. User Registration</h2>
-        <form id="userForm">
+    <!-- SECTION 1: LOGIN PAGE -->
+    <div id="loginSection" class="card">
+        <h2>System Login</h2>
+        <form id="loginForm">
             <div class="form-group">
-                <label>User ID:</label>
-                <input type="text" id="userId" placeholder="e.g. U001" required>
+                <label>Username / User ID:</label>
+                <input type="text" id="loginUser" placeholder="Enter username (e.g. U001 or A001)" required>
             </div>
             <div class="form-group">
-                <label>Name:</label>
-                <input type="text" id="userName" placeholder="e.g. Kamal Perera" required>
+                <label>Password:</label>
+                <input type="password" id="loginPass" placeholder="Enter password" required>
             </div>
             <div class="form-group">
-                <label>Role:</label>
-                <select id="userRole">
+                <label>Select Role:</label>
+                <select id="loginRole">
                     <option value="Customer">Customer</option>
                     <option value="Admin">Admin</option>
                 </select>
             </div>
-            <button type="submit">Register User</button>
+            <button type="submit" class="btn-primary">Login to System</button>
         </form>
-        <div id="userMsg" class="msg"></div>
-
-        <h3 style="margin-top: 20px;">Registered Users</h3>
-        <table id="userTable">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr><td>U001</td><td>Kamal Perera</td><td>Customer</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
-            <tr><td>A001</td><td>Nimal Admin</td><td>Admin</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
-            </tbody>
-        </table>
     </div>
 
-    <!-- Admin Food Menu Management Section -->
-    <div class="card">
-        <h2>2. Admin: Food Menu Management</h2>
-        <form id="foodForm">
-            <div class="form-group">
-                <label>Item ID:</label>
-                <input type="text" id="foodId" placeholder="e.g. F004" required>
-            </div>
-            <div class="form-group">
-                <label>Item Name:</label>
-                <input type="text" id="foodName" placeholder="e.g. Fried Rice" required>
-            </div>
-            <div class="form-group">
-                <label>Price (Rs.):</label>
-                <input type="number" id="foodPrice" placeholder="e.g. 950" required>
-            </div>
-            <div class="form-group">
-                <label>Category:</label>
-                <select id="foodCategory">
-                    <option value="Main Course">Main Course</option>
-                    <option value="Beverage">Beverage</option>
-                    <option value="Dessert">Dessert</option>
-                </select>
-            </div>
-            <button type="submit">Add Food Item to Menu</button>
-        </form>
-        <div id="foodMsg" class="msg"></div>
+    <!-- SECTION 2: ADMIN DASHBOARD (ADMIN ONLY) -->
+    <div id="adminSection" class="hidden">
+        <!-- User Management -->
+        <div class="card">
+            <h2>Admin: User Management <span class="role-badge">ADMIN</span></h2>
+            <form id="userForm">
+                <div class="form-group">
+                    <label>User ID:</label>
+                    <input type="text" id="userId" placeholder="e.g. U002" required>
+                </div>
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="userName" placeholder="e.g. Nimal Siripala" required>
+                </div>
+                <div class="form-group">
+                    <label>Role:</label>
+                    <select id="userRole">
+                        <option value="Customer">Customer</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-action">Register New User</button>
+            </form>
+            <div id="userMsg" class="msg"></div>
 
-        <h3 style="margin-top: 20px;">Current Food Menu</h3>
-        <table id="menuTable">
-            <thead>
-            <tr>
-                <th>Item ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Category</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td><td><button class="btn-delete" onclick="deleteFood(this, 'F001')">Delete</button></td></tr>
-            <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td><td><button class="btn-delete" onclick="deleteFood(this, 'F002')">Delete</button></td></tr>
-            <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td><td><button class="btn-delete" onclick="deleteFood(this, 'F003')">Delete</button></td></tr>
-            </tbody>
-        </table>
+            <h3 style="margin-top: 20px;">Registered Users</h3>
+            <table id="userTable">
+                <thead>
+                <tr><th>ID</th><th>Name</th><th>Role</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                <tr><td>U001</td><td>Kamal Perera</td><td>Customer</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
+                <tr><td>A001</td><td>Nimal Admin</td><td>Admin</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Food Menu Management -->
+        <div class="card">
+            <h2>Admin: Food Menu Management <span class="role-badge">ADMIN</span></h2>
+            <form id="foodForm">
+                <div class="form-group">
+                    <label>Item ID:</label>
+                    <input type="text" id="foodId" placeholder="e.g. F004" required>
+                </div>
+                <div class="form-group">
+                    <label>Item Name:</label>
+                    <input type="text" id="foodName" placeholder="e.g. Chicken Rice" required>
+                </div>
+                <div class="form-group">
+                    <label>Price (Rs.):</label>
+                    <input type="number" id="foodPrice" placeholder="e.g. 950" required>
+                </div>
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="foodCategory">
+                        <option value="Main Course">Main Course</option>
+                        <option value="Beverage">Beverage</option>
+                        <option value="Dessert">Dessert</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-action">Add Food Item</button>
+            </form>
+            <div id="foodMsg" class="msg"></div>
+
+            <h3 style="margin-top: 20px;">Current Food Menu</h3>
+            <table id="adminMenuTable">
+                <thead>
+                <tr><th>Item ID</th><th>Name</th><th>Price</th><th>Category</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td><td><button class="btn-delete" onclick="deleteFood(this, 'F001')">Delete</button></td></tr>
+                <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td><td><button class="btn-delete" onclick="deleteFood(this, 'F002')">Delete</button></td></tr>
+                <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td><td><button class="btn-delete" onclick="deleteFood(this, 'F003')">Delete</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- All Orders View -->
+        <div class="card">
+            <h2>Admin: All Orders Monitoring <span class="role-badge">ADMIN</span></h2>
+            <table id="adminOrderTable">
+                <thead>
+                <tr><th>Order ID</th><th>Customer</th><th>Item</th><th>Status</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Order Section -->
-    <div class="card">
-        <h2>3. Customer: Place Order</h2>
-        <form id="orderForm">
-            <div class="form-group">
-                <label>Select Customer:</label>
-                <select id="orderUser">
-                    <option value="U001 - Kamal Perera">U001 - Kamal Perera</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Select Food Item:</label>
-                <select id="orderItem">
-                    <option value="Chicken Burger (Rs. 1200)">Chicken Burger (Rs. 1200)</option>
-                    <option value="Iced Coffee (Rs. 450)">Iced Coffee (Rs. 450)</option>
-                    <option value="Chocolate Cake (Rs. 600)">Chocolate Cake (Rs. 600)</option>
-                </select>
-            </div>
-            <button type="submit">Place Order</button>
-        </form>
-        <div id="orderMsg" class="msg"></div>
+    <!-- SECTION 3: CUSTOMER DASHBOARD (CUSTOMER ONLY) -->
+    <div id="customerSection" class="hidden">
+        <!-- View Food Menu -->
+        <div class="card">
+            <h2>Customer: Available Food Menu <span class="role-badge">CUSTOMER</span></h2>
+            <table id="customerMenuTable">
+                <thead>
+                <tr><th>Item ID</th><th>Name</th><th>Price</th><th>Category</th></tr>
+                </thead>
+                <tbody>
+                <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td></tr>
+                <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td></tr>
+                <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td></tr>
+                </tbody>
+            </table>
+        </div>
 
-        <h3 style="margin-top: 20px;">Recent Orders</h3>
-        <table id="orderTable">
-            <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Item</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
-            </tbody>
-        </table>
+        <!-- Place Order -->
+        <div class="card">
+            <h2>Customer: Place Order <span class="role-badge">CUSTOMER</span></h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label>Select Food Item:</label>
+                    <select id="orderItem">
+                        <option value="Chicken Burger (Rs. 1200)">Chicken Burger (Rs. 1200)</option>
+                        <option value="Iced Coffee (Rs. 450)">Iced Coffee (Rs. 450)</option>
+                        <option value="Chocolate Cake (Rs. 600)">Chocolate Cake (Rs. 600)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-action">Place Order</button>
+            </form>
+            <div id="orderMsg" class="msg"></div>
+
+            <h3 style="margin-top: 20px;">My Orders</h3>
+            <table id="customerOrderTable">
+                <thead>
+                <tr><th>Order ID</th><th>Item</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr><td>ORD1001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
-    // Register User
+    let activeUser = "";
+    let activeRole = "";
+
+    // LOGIN LOGIC
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        activeUser = document.getElementById('loginUser').value;
+        activeRole = document.getElementById('loginRole').value;
+
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('logoutBtn').classList.remove('hidden');
+
+        if (activeRole === 'Admin') {
+            document.getElementById('adminSection').classList.remove('hidden');
+            document.getElementById('headerSub').innerText = `Logged in as Admin (${activeUser})`;
+        } else {
+            document.getElementById('customerSection').classList.remove('hidden');
+            document.getElementById('headerSub').innerText = `Logged in as Customer (${activeUser})`;
+        }
+    });
+
+    // LOGOUT LOGIC
+    function logout() {
+        document.getElementById('adminSection').classList.add('hidden');
+        document.getElementById('customerSection').classList.add('hidden');
+        document.getElementById('logoutBtn').classList.add('hidden');
+        document.getElementById('loginSection').classList.remove('hidden');
+        document.getElementById('headerSub').innerText = 'Role-based Access Control System';
+        document.getElementById('loginForm').reset();
+    }
+
+    // ADMIN: REGISTER USER
     document.getElementById('userForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = document.getElementById('userId').value;
@@ -244,19 +355,11 @@
         const newRow = table.insertRow();
         newRow.innerHTML = `<td>${id}</td><td>${name}</td><td>${role}</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
 
-        if (role === 'Customer') {
-            const userSelect = document.getElementById('orderUser');
-            const option = document.createElement('option');
-            option.value = `${id} - ${name}`;
-            option.text = `${id} - ${name}`;
-            userSelect.add(option);
-        }
-
         document.getElementById('userMsg').innerText = `User ${name} registered successfully!`;
         document.getElementById('userForm').reset();
     });
 
-    // Admin: Add Food Item
+    // ADMIN: ADD FOOD ITEM
     document.getElementById('foodForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = document.getElementById('foodId').value;
@@ -264,9 +367,16 @@
         const price = parseFloat(document.getElementById('foodPrice').value).toFixed(2);
         const category = document.getElementById('foodCategory').value;
 
-        const table = document.getElementById('menuTable').getElementsByTagName('tbody')[0];
-        const newRow = table.insertRow();
-        newRow.innerHTML = `<td>${id}</td><td>${name}</td><td>Rs. ${price}</td><td>${category}</td><td><button class="btn-delete" onclick="deleteFood(this, '${id}')">Delete</button></td>`;
+        // Add to Admin Menu Table
+        const adminTable = document.getElementById('adminMenuTable').getElementsByTagName('tbody')[0];
+        const newAdminRow = adminTable.insertRow();
+        newAdminRow.innerHTML = `<td>${id}</td><td>${name}</td><td>Rs. ${price}</td><td>${category}</td><td><button class="btn-delete" onclick="deleteFood(this, '${id}')">Delete</button></td>`;
+
+        // Add to Customer Menu Table
+        const custTable = document.getElementById('customerMenuTable').getElementsByTagName('tbody')[0];
+        const newCustRow = custTable.insertRow();
+        newCustRow.id = `cust-row-${id}`;
+        newCustRow.innerHTML = `<td>${id}</td><td>${name}</td><td>Rs. ${price}</td><td>${category}</td>`;
 
         // Update Order Dropdown
         const itemSelect = document.getElementById('orderItem');
@@ -280,31 +390,38 @@
         document.getElementById('foodForm').reset();
     });
 
-    // Place Order
+    // CUSTOMER: PLACE ORDER
     let orderCount = 1002;
     document.getElementById('orderForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const user = document.getElementById('orderUser').value.split(' - ')[0];
         const item = document.getElementById('orderItem').value;
 
-        const table = document.getElementById('orderTable').getElementsByTagName('tbody')[0];
-        const newRow = table.insertRow();
-        newRow.innerHTML = `<td>ORD${orderCount++}</td><td>${user}</td><td>${item}</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
+        // Add to Customer Orders Table
+        const custOrderTable = document.getElementById('customerOrderTable').getElementsByTagName('tbody')[0];
+        const newCustRow = custOrderTable.insertRow();
+        newCustRow.innerHTML = `<td>ORD${orderCount}</td><td>${item}</td><td>PENDING</td>`;
+
+        // Add to Admin Orders Monitoring Table
+        const adminOrderTable = document.getElementById('adminOrderTable').getElementsByTagName('tbody')[0];
+        const newAdminRow = adminOrderTable.insertRow();
+        newAdminRow.innerHTML = `<td>ORD${orderCount++}</td><td>${activeUser}</td><td>${item}</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
 
         document.getElementById('orderMsg').innerText = `Order placed successfully!`;
     });
 
-    // Delete Row Logic
+    // DELETE ROW LOGIC
     function deleteRow(btn) {
         const row = btn.parentNode.parentNode;
         row.parentNode.removeChild(row);
     }
 
-    // Delete Food Item Logic
+    // DELETE FOOD LOGIC
     function deleteFood(btn, foodId) {
         deleteRow(btn);
         const opt = document.getElementById(`opt-${foodId}`);
         if (opt) opt.remove();
+        const custRow = document.getElementById(`cust-row-${foodId}`);
+        if (custRow) custRow.remove();
     }
 </script>
 
