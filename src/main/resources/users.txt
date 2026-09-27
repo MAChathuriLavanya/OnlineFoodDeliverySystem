@@ -2,3 +2,5 @@ U001,kamal,pas123,kamal@gmail.com,CUSTOMER,No 12, Colombo
 A001,nimal_admin,admin123,admin@food.com,ADMIN,IT Dept
 U001,kamal,pas123,kamal@gmail.com,CUSTOMER,No 12, Colombo
 A001,nimal_admin,admin123,admin@food.com,ADMIN,IT Dept
+U001,kamal,pas123,kamal@gmail.com,CUSTOMER,No 12, Colombo
+A001,nimal_admin,admin123,admin@food.com,ADMIN,IT Dept

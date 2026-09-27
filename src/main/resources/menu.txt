@@ -1,3 +1,5 @@
 F001,Chicken Burger,1200.0,Main Course
 F002,Iced Coffee,450.0,Beverage
 F003,Chocolate Cake,600.0,Dessert
+F001,Chicken Burger,1200.0,Main Course
+F002,Iced Coffee,450.0,Beverage
