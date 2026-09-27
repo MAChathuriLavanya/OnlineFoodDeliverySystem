@@ -71,6 +71,21 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-wrapper input {
+            padding-right: 40px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            user-select: none;
+        }
         input.input-error {
             border: 2px solid #ff4757;
             background-color: #ffeae8;
@@ -164,6 +179,18 @@
         .toggle-link a:hover {
             text-decoration: underline;
         }
+        .qty-input {
+            width: 60px !important;
+            padding: 5px !important;
+            text-align: center;
+        }
+        .total-box {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff4757;
+            margin-top: 15px;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -186,7 +213,10 @@
             </div>
             <div class="form-group">
                 <label>Password:</label>
-                <input type="password" id="loginPass" placeholder="Enter password" required>
+                <div class="password-wrapper">
+                    <input type="password" id="loginPass" placeholder="Enter password" required>
+                    <span class="toggle-password" onclick="togglePassword('loginPass', this)">👁️</span>
+                </div>
             </div>
             <button type="submit" class="btn-primary">Login to System</button>
         </form>
@@ -212,7 +242,10 @@
             </div>
             <div class="form-group">
                 <label>Choose Password:</label>
-                <input type="password" id="regPass" placeholder="Enter password" required>
+                <div class="password-wrapper">
+                    <input type="password" id="regPass" placeholder="Enter password" required>
+                    <span class="toggle-password" onclick="togglePassword('regPass', this)">👁️</span>
+                </div>
             </div>
             <button type="submit" id="regSubmitBtn" class="btn-action" style="width: 100%; padding: 10px; font-size: 16px;">Create Customer Account</button>
         </form>
@@ -239,7 +272,10 @@
                 </div>
                 <div class="form-group">
                     <label>Password:</label>
-                    <input type="password" id="userPass" placeholder="Set user password" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="userPass" placeholder="Set user password" required>
+                        <span class="toggle-password" onclick="togglePassword('userPass', this)">👁️</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Role:</label>
@@ -296,10 +332,8 @@
                 <thead>
                     <tr><th>Item ID</th><th>Name</th><th>Price</th><th>Category</th><th>Action</th></tr>
                 </thead>
-                <tbody>
-                    <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td><td><button class="btn-delete" onclick="deleteFood(this, 'F001')">Delete</button></td></tr>
-                    <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td><td><button class="btn-delete" onclick="deleteFood(this, 'F002')">Delete</button></td></tr>
-                    <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td><td><button class="btn-delete" onclick="deleteFood(this, 'F003')">Delete</button></td></tr>
+                <tbody id="adminMenuTableBody">
+                    <!-- Populated via JS -->
                 </tbody>
             </table>
         </div>
@@ -309,10 +343,10 @@
             <h2>Admin: All Orders Monitoring <span class="role-badge">ADMIN</span></h2>
             <table id="adminOrderTable">
                 <thead>
-                    <tr><th>Order ID</th><th>Customer ID</th><th>Item</th><th>Status</th><th>Action</th></tr>
+                    <tr><th>Order ID</th><th>Customer ID</th><th>Items Ordered</th><th>Total Price</th><th>Status</th><th>Action</th></tr>
                 </thead>
-                <tbody>
-                    <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
+                <tbody id="adminOrderTableBody">
+                    <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger (x1), Iced Coffee (x1)</td><td>Rs. 1650.00</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
                 </tbody>
             </table>
         </div>
@@ -320,44 +354,30 @@
 
     <!-- SECTION 3: CUSTOMER DASHBOARD (CUSTOMER ONLY) -->
     <div id="customerSection" class="hidden">
-        <!-- View Food Menu -->
+        <!-- Place Order with Multiple Items -->
         <div class="card">
-            <h2>Customer: Available Food Menu <span class="role-badge">CUSTOMER</span></h2>
-            <table id="customerMenuTable">
-                <thead>
-                    <tr><th>Item ID</th><th>Name</th><th>Price</th><th>Category</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td></tr>
-                    <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td></tr>
-                    <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Place Order -->
-        <div class="card">
-            <h2>Customer: Place Order <span class="role-badge">CUSTOMER</span></h2>
+            <h2>Customer: Select Food Items & Place Order <span class="role-badge">CUSTOMER</span></h2>
             <form id="orderForm">
-                <div class="form-group">
-                    <label>Select Food Item:</label>
-                    <select id="orderItem">
-                        <option value="Chicken Burger (Rs. 1200)">Chicken Burger (Rs. 1200)</option>
-                        <option value="Iced Coffee (Rs. 450)">Iced Coffee (Rs. 450)</option>
-                        <option value="Chocolate Cake (Rs. 600)">Chocolate Cake (Rs. 600)</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-action">Place Order</button>
+                <table id="customerMenuTable">
+                    <thead>
+                        <tr><th>Select</th><th>Item ID</th><th>Name</th><th>Category</th><th>Price</th><th>Quantity</th></tr>
+                    </thead>
+                    <tbody id="customerMenuTableBody">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+                <div class="total-box">Estimated Total: Rs. <span id="orderTotal">0.00</span></div>
+                <button type="submit" class="btn-action" style="margin-top: 15px; width: 100%; padding: 12px; font-size: 16px;">Confirm & Place Order</button>
             </form>
             <div id="orderMsg" class="msg"></div>
 
-            <h3 style="margin-top: 20px;">My Orders History</h3>
+            <h3 style="margin-top: 25px;">My Orders History</h3>
             <table id="customerOrderTable">
                 <thead>
-                    <tr><th>Order ID</th><th>Item</th><th>Status</th></tr>
+                    <tr><th>Order ID</th><th>Items</th><th>Total Price</th><th>Status</th></tr>
                 </thead>
-                <tbody>
-                    <tr><td>ORD1001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td></tr>
+                <tbody id="customerOrderTableBody">
+                    <tr><td>ORD1001</td><td>Chicken Burger (x1), Iced Coffee (x1)</td><td>Rs. 1650.00</td><td>PENDING</td></tr>
                 </tbody>
             </table>
         </div>
@@ -365,10 +385,29 @@
 </div>
 
 <script>
+    // Show/Hide Password Feature
+    function togglePassword(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.innerText = "🙈";
+        } else {
+            input.type = "password";
+            icon.innerText = "👁️";
+        }
+    }
+
     // Registered Users Database
     const usersDB = [
         { id: "admin", name: "System Administrator", pass: "admin123", role: "Admin" },
         { id: "U001", name: "Kamal Perera", pass: "123", role: "Customer" }
+    ];
+
+    // Food Menu Items Database
+    const foodDB = [
+        { id: "F001", name: "Chicken Burger", price: 1200.00, category: "Main Course" },
+        { id: "F002", name: "Iced Coffee", price: 450.00, category: "Beverage" },
+        { id: "F003", name: "Chocolate Cake", price: 600.00, category: "Dessert" }
     ];
 
     let currentUser = null;
@@ -418,7 +457,7 @@
         }
     });
 
-    // Render User Table in Admin Panel
+    // Render User Table
     function renderUserTable() {
         const tbody = document.getElementById('userTableBody');
         tbody.innerHTML = '';
@@ -428,7 +467,49 @@
         });
     }
 
+    // Render Food Tables
+    function renderFoodTables() {
+        // Admin Table
+        const adminTbody = document.getElementById('adminMenuTableBody');
+        adminTbody.innerHTML = '';
+        foodDB.forEach((f, index) => {
+            const row = adminTbody.insertRow();
+            row.innerHTML = `<td>${f.id}</td><td>${f.name}</td><td>Rs. ${f.price.toFixed(2)}</td><td>${f.category}</td><td><button class="btn-delete" onclick="deleteFoodItem(${index})">Delete</button></td>`;
+        });
+
+        // Customer Menu Table (With Checkboxes & Qty)
+        const custTbody = document.getElementById('customerMenuTableBody');
+        custTbody.innerHTML = '';
+        foodDB.forEach((f, index) => {
+            const row = custTbody.insertRow();
+            row.innerHTML = `
+                <td><input type="checkbox" class="food-select" data-index="${index}" onchange="calculateTotal()"></td>
+                <td>${f.id}</td>
+                <td>${f.name}</td>
+                <td>${f.category}</td>
+                <td>Rs. ${f.price.toFixed(2)}</td>
+                <td><input type="number" class="qty-input" id="qty-${index}" value="1" min="1" onchange="calculateTotal()" oninput="calculateTotal()"></td>
+            `;
+        });
+        calculateTotal();
+    }
+
+    // Calculate Order Total
+    function calculateTotal() {
+        let total = 0;
+        const checkboxes = document.querySelectorAll('.food-select');
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const idx = cb.getAttribute('data-index');
+                const qty = parseInt(document.getElementById(`qty-${idx}`).value) || 1;
+                total += foodDB[idx].price * qty;
+            }
+        });
+        document.getElementById('orderTotal').innerText = total.toFixed(2);
+    }
+
     renderUserTable();
+    renderFoodTables();
 
     // CUSTOMER SELF-REGISTRATION
     document.getElementById('customerRegisterForm').addEventListener('submit', function(e) {
@@ -515,7 +596,7 @@
         document.getElementById('userForm').reset();
     });
 
-    // DELETE USER LOGIC
+    // DELETE USER
     function deleteUser(index) {
         usersDB.splice(index, 1);
         renderUserTable();
@@ -524,61 +605,72 @@
     // ADMIN: ADD FOOD ITEM
     document.getElementById('foodForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const id = document.getElementById('foodId').value;
-        const name = document.getElementById('foodName').value;
-        const price = parseFloat(document.getElementById('foodPrice').value).toFixed(2);
+        const id = document.getElementById('foodId').value.trim();
+        const name = document.getElementById('foodName').value.trim();
+        const price = parseFloat(document.getElementById('foodPrice').value);
         const category = document.getElementById('foodCategory').value;
 
-        const adminTable = document.getElementById('adminMenuTable').getElementsByTagName('tbody')[0];
-        const newAdminRow = adminTable.insertRow();
-        newAdminRow.innerHTML = `<td>${id}</td><td>${name}</td><td>Rs. ${price}</td><td>${category}</td><td><button class="btn-delete" onclick="deleteFood(this, '${id}')">Delete</button></td>`;
-
-        const custTable = document.getElementById('customerMenuTable').getElementsByTagName('tbody')[0];
-        const newCustRow = custTable.insertRow();
-        newCustRow.id = `cust-row-${id}`;
-        newCustRow.innerHTML = `<td>${id}</td><td>${name}</td><td>Rs. ${price}</td><td>${category}</td>`;
-
-        const itemSelect = document.getElementById('orderItem');
-        const option = document.createElement('option');
-        option.value = `${name} (Rs. ${price})`;
-        option.text = `${name} (Rs. ${price})`;
-        option.id = `opt-${id}`;
-        itemSelect.add(option);
+        foodDB.push({ id, name, price, category });
+        renderFoodTables();
 
         document.getElementById('foodMsg').innerText = `Food Item '${name}' added by Admin successfully!`;
         document.getElementById('foodForm').reset();
     });
 
-    // CUSTOMER: PLACE ORDER
+    // DELETE FOOD ITEM
+    function deleteFoodItem(index) {
+        foodDB.splice(index, 1);
+        renderFoodTables();
+    }
+
+    // CUSTOMER: PLACE MULTI-ITEM ORDER
     let orderCount = 1002;
     document.getElementById('orderForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const item = document.getElementById('orderItem').value;
+        
+        const selectedItems = [];
+        let grandTotal = 0;
 
-        const custOrderTable = document.getElementById('customerOrderTable').getElementsByTagName('tbody')[0];
+        const checkboxes = document.querySelectorAll('.food-select');
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const idx = cb.getAttribute('data-index');
+                const qty = parseInt(document.getElementById(`qty-${idx}`).value) || 1;
+                const itemTotal = foodDB[idx].price * qty;
+                grandTotal += itemTotal;
+                selectedItems.push(`${foodDB[idx].name} (x${qty})`);
+            }
+        });
+
+        if (selectedItems.length === 0) {
+            alert("Please select at least one food item to place an order!");
+            return;
+        }
+
+        const itemListStr = selectedItems.join(', ');
+        const totalStr = `Rs. ${grandTotal.toFixed(2)}`;
+
+        // Add to Customer Orders History
+        const custOrderTable = document.getElementById('customerOrderTableBody');
         const newCustRow = custOrderTable.insertRow();
-        newCustRow.innerHTML = `<td>ORD${orderCount}</td><td>${item}</td><td>PENDING</td>`;
+        newCustRow.innerHTML = `<td>ORD${orderCount}</td><td>${itemListStr}</td><td>${totalStr}</td><td>PENDING</td>`;
 
-        const adminOrderTable = document.getElementById('adminOrderTable').getElementsByTagName('tbody')[0];
+        // Add to Admin Orders Monitoring Table
+        const adminOrderTable = document.getElementById('adminOrderTableBody');
         const newAdminRow = adminOrderTable.insertRow();
-        newAdminRow.innerHTML = `<td>ORD${orderCount++}</td><td>${currentUser.id}</td><td>${item}</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
+        newAdminRow.innerHTML = `<td>ORD${orderCount++}</td><td>${currentUser.id}</td><td>${itemListStr}</td><td>${totalStr}</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
 
-        document.getElementById('orderMsg').innerText = `Order placed successfully!`;
+        document.getElementById('orderMsg').innerText = `Order placed successfully with ${selectedItems.length} item(s)! Total: ${totalStr}`;
+
+        // Reset selections
+        checkboxes.forEach(cb => cb.checked = false);
+        calculateTotal();
     });
 
     // DELETE ROW LOGIC
     function deleteRow(btn) {
         const row = btn.parentNode.parentNode;
         row.parentNode.removeChild(row);
-    }
-
-    // DELETE FOOD LOGIC
-    function deleteFood(btn, foodId) {
-        deleteRow(btn);
-        const opt = document.getElementById(`opt-${foodId}`);
-        if (opt) opt.remove();
-        const custRow = document.getElementById(`cust-row-${foodId}`);
-        if (custRow) custRow.remove();
     }
 </script>
 
