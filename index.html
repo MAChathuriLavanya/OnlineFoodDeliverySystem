@@ -17,7 +17,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
         }
         header {
@@ -59,14 +59,22 @@
             background-color: #2ed573;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
         }
         button:hover {
             background-color: #26af5f;
+        }
+        .btn-delete {
+            background-color: #ff4757;
+            font-size: 13px;
+            padding: 5px 10px;
+        }
+        .btn-delete:hover {
+            background-color: #ff6b81;
         }
         table {
             width: 100%;
@@ -82,7 +90,7 @@
             background-color: #ff4757;
             color: white;
         }
-        .success-msg {
+        .msg {
             color: #2ed573;
             font-weight: bold;
             margin-top: 10px;
@@ -94,7 +102,7 @@
 <div class="container">
     <header>
         <h1>🍔 Online Food Delivery System</h1>
-        <p>Interactive Front-end Web Dashboard</p>
+        <p>Interactive Front-end Web Dashboard with Admin Management</p>
     </header>
 
     <!-- User Management Section -->
@@ -118,7 +126,7 @@
             </div>
             <button type="submit">Register User</button>
         </form>
-        <div id="userMsg" class="success-msg"></div>
+        <div id="userMsg" class="msg"></div>
 
         <h3 style="margin-top: 20px;">Registered Users</h3>
         <table id="userTable">
@@ -127,47 +135,75 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Role</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
-            <tr><td>U001</td><td>Kamal Perera</td><td>Customer</td></tr>
-            <tr><td>A001</td><td>Nimal Admin</td><td>Admin</td></tr>
+            <tr><td>U001</td><td>Kamal Perera</td><td>Customer</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
+            <tr><td>A001</td><td>Nimal Admin</td><td>Admin</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
             </tbody>
         </table>
     </div>
 
-    <!-- Menu Section -->
+    <!-- Admin Food Menu Management Section -->
     <div class="card">
-        <h2>2. Food Menu</h2>
-        <table>
+        <h2>2. Admin: Food Menu Management</h2>
+        <form id="foodForm">
+            <div class="form-group">
+                <label>Item ID:</label>
+                <input type="text" id="foodId" placeholder="e.g. F004" required>
+            </div>
+            <div class="form-group">
+                <label>Item Name:</label>
+                <input type="text" id="foodName" placeholder="e.g. Fried Rice" required>
+            </div>
+            <div class="form-group">
+                <label>Price (Rs.):</label>
+                <input type="number" id="foodPrice" placeholder="e.g. 950" required>
+            </div>
+            <div class="form-group">
+                <label>Category:</label>
+                <select id="foodCategory">
+                    <option value="Main Course">Main Course</option>
+                    <option value="Beverage">Beverage</option>
+                    <option value="Dessert">Dessert</option>
+                </select>
+            </div>
+            <button type="submit">Add Food Item to Menu</button>
+        </form>
+        <div id="foodMsg" class="msg"></div>
+
+        <h3 style="margin-top: 20px;">Current Food Menu</h3>
+        <table id="menuTable">
             <thead>
             <tr>
                 <th>Item ID</th>
                 <th>Name</th>
                 <th>Price</th>
                 <th>Category</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
-            <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td></tr>
-            <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td></tr>
-            <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td></tr>
+            <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td><td><button class="btn-delete" onclick="deleteFood(this, 'F001')">Delete</button></td></tr>
+            <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td><td><button class="btn-delete" onclick="deleteFood(this, 'F002')">Delete</button></td></tr>
+            <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td><td><button class="btn-delete" onclick="deleteFood(this, 'F003')">Delete</button></td></tr>
             </tbody>
         </table>
     </div>
 
     <!-- Order Section -->
     <div class="card">
-        <h2>3. Place Order</h2>
+        <h2>3. Customer: Place Order</h2>
         <form id="orderForm">
             <div class="form-group">
-                <label>Select User:</label>
+                <label>Select Customer:</label>
                 <select id="orderUser">
                     <option value="U001 - Kamal Perera">U001 - Kamal Perera</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Select Item:</label>
+                <label>Select Food Item:</label>
                 <select id="orderItem">
                     <option value="Chicken Burger (Rs. 1200)">Chicken Burger (Rs. 1200)</option>
                     <option value="Iced Coffee (Rs. 450)">Iced Coffee (Rs. 450)</option>
@@ -176,7 +212,7 @@
             </div>
             <button type="submit">Place Order</button>
         </form>
-        <div id="orderMsg" class="success-msg"></div>
+        <div id="orderMsg" class="msg"></div>
 
         <h3 style="margin-top: 20px;">Recent Orders</h3>
         <table id="orderTable">
@@ -186,17 +222,18 @@
                 <th>Customer</th>
                 <th>Item</th>
                 <th>Status</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
-            <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td></tr>
+            <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
 <script>
-    // User Form Submit Logic
+    // Register User
     document.getElementById('userForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = document.getElementById('userId').value;
@@ -205,7 +242,7 @@
 
         const table = document.getElementById('userTable').getElementsByTagName('tbody')[0];
         const newRow = table.insertRow();
-        newRow.innerHTML = `<td>${id}</td><td>${name}</td><td>${role}</td>`;
+        newRow.innerHTML = `<td>${id}</td><td>${name}</td><td>${role}</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
 
         if (role === 'Customer') {
             const userSelect = document.getElementById('orderUser');
@@ -219,7 +256,31 @@
         document.getElementById('userForm').reset();
     });
 
-    // Order Form Submit Logic
+    // Admin: Add Food Item
+    document.getElementById('foodForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('foodId').value;
+        const name = document.getElementById('foodName').value;
+        const price = parseFloat(document.getElementById('foodPrice').value).toFixed(2);
+        const category = document.getElementById('foodCategory').value;
+
+        const table = document.getElementById('menuTable').getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        newRow.innerHTML = `<td>${id}</td><td>${name}</td><td>Rs. ${price}</td><td>${category}</td><td><button class="btn-delete" onclick="deleteFood(this, '${id}')">Delete</button></td>`;
+
+        // Update Order Dropdown
+        const itemSelect = document.getElementById('orderItem');
+        const option = document.createElement('option');
+        option.value = `${name} (Rs. ${price})`;
+        option.text = `${name} (Rs. ${price})`;
+        option.id = `opt-${id}`;
+        itemSelect.add(option);
+
+        document.getElementById('foodMsg').innerText = `Food Item '${name}' added by Admin successfully!`;
+        document.getElementById('foodForm').reset();
+    });
+
+    // Place Order
     let orderCount = 1002;
     document.getElementById('orderForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -228,10 +289,23 @@
 
         const table = document.getElementById('orderTable').getElementsByTagName('tbody')[0];
         const newRow = table.insertRow();
-        newRow.innerHTML = `<td>ORD${orderCount++}</td><td>${user}</td><td>${item}</td><td>PENDING</td>`;
+        newRow.innerHTML = `<td>ORD${orderCount++}</td><td>${user}</td><td>${item}</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
 
         document.getElementById('orderMsg').innerText = `Order placed successfully!`;
     });
+
+    // Delete Row Logic
+    function deleteRow(btn) {
+        const row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    // Delete Food Item Logic
+    function deleteFood(btn, foodId) {
+        deleteRow(btn);
+        const opt = document.getElementById(`opt-${foodId}`);
+        if (opt) opt.remove();
+    }
 </script>
 
 </body>
