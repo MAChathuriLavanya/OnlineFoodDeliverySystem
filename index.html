@@ -152,6 +152,20 @@
             margin-bottom: 15px;
             font-size: 13px;
         }
+        .toggle-link {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .toggle-link a {
+            color: #ff4757;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -163,7 +177,7 @@
         <button id="logoutBtn" class="logout-btn hidden" onclick="logout()">Logout</button>
     </header>
 
-    <!-- SECTION 1: SECURE LOGIN PAGE -->
+    <!-- SECTION 1A: LOGIN FORM -->
     <div id="loginSection" class="card">
         <h2>System Login</h2>
 
@@ -185,6 +199,35 @@
             <button type="submit" class="btn-primary">Login to System</button>
         </form>
         <div id="loginError" class="error-msg"></div>
+
+        <div class="toggle-link">
+            Don't have an account? <a onclick="showRegisterForm()">Register / Sign Up Here</a>
+        </div>
+    </div>
+
+    <!-- SECTION 1B: NEW CUSTOMER REGISTER FORM -->
+    <div id="registerSection" class="card hidden">
+        <h2>New Customer Registration</h2>
+        <form id="customerRegisterForm">
+            <div class="form-group">
+                <label>Choose User ID / Username:</label>
+                <input type="text" id="regUser" placeholder="e.g. U002" required>
+            </div>
+            <div class="form-group">
+                <label>Full Name:</label>
+                <input type="text" id="regName" placeholder="e.g. Amal Perera" required>
+            </div>
+            <div class="form-group">
+                <label>Choose Password:</label>
+                <input type="password" id="regPass" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn-action" style="width: 100%; padding: 10px; font-size: 16px;">Create Customer Account</button>
+        </form>
+        <div id="regMsg" class="msg"></div>
+
+        <div class="toggle-link">
+            Already have an account? <a onclick="showLoginForm()">Back to Login</a>
+        </div>
     </div>
 
     <!-- SECTION 2: ADMIN DASHBOARD (ADMIN ONLY) -->
@@ -195,7 +238,7 @@
             <form id="userForm">
                 <div class="form-group">
                     <label>User ID / Username:</label>
-                    <input type="text" id="userId" placeholder="e.g. U002 or A002" required>
+                    <input type="text" id="userId" placeholder="e.g. U003 or A002" required>
                 </div>
                 <div class="form-group">
                     <label>Full Name:</label>
@@ -337,6 +380,19 @@
 
     let currentUser = null;
 
+    // Toggle Forms
+    function showRegisterForm() {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('registerSection').classList.remove('hidden');
+        document.getElementById('loginError').innerText = "";
+    }
+
+    function showLoginForm() {
+        document.getElementById('registerSection').classList.add('hidden');
+        document.getElementById('loginSection').classList.remove('hidden');
+        document.getElementById('regMsg').innerText = "";
+    }
+
     // Render User Table in Admin Panel
     function renderUserTable() {
         const tbody = document.getElementById('userTableBody');
@@ -349,6 +405,31 @@
 
     renderUserTable();
 
+    // CUSTOMER SELF-REGISTRATION
+    document.getElementById('customerRegisterForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('regUser').value.trim();
+        const name = document.getElementById('regName').value.trim();
+        const pass = document.getElementById('regPass').value.trim();
+
+        if (usersDB.some(u => u.id === id)) {
+            alert("User ID already exists! Please choose a different User ID.");
+            return;
+        }
+
+        usersDB.push({ id, name, pass, role: "Customer" });
+        renderUserTable();
+
+        document.getElementById('regMsg').innerText = `Registration successful! You can now login as ${id}.`;
+        document.getElementById('customerRegisterForm').reset();
+
+        setTimeout(() => {
+            showLoginForm();
+            document.getElementById('loginUser').value = id;
+            document.getElementById('loginPass').value = pass;
+        }, 1500);
+    });
+
     // AUTHENTICATION & LOGIN LOGIC
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -356,7 +437,6 @@
         const passInput = document.getElementById('loginPass').value.trim();
         const errorDiv = document.getElementById('loginError');
 
-        // Verify credentials against Database
         const foundUser = usersDB.find(u => u.id === userInput && u.pass === passInput);
 
         if (foundUser) {
@@ -397,7 +477,6 @@
         const pass = document.getElementById('userPass').value.trim();
         const role = document.getElementById('userRole').value;
 
-        // Check if ID already exists
         if (usersDB.some(u => u.id === id)) {
             alert("User ID already exists! Please use a unique ID.");
             return;
@@ -406,7 +485,7 @@
         usersDB.push({ id, name, pass, role });
         renderUserTable();
 
-        document.getElementById('userMsg').innerText = `User '${name}' (${role}) registered successfully with password!`;
+        document.getElementById('userMsg').innerText = `User '${name}' (${role}) registered successfully!`;
         document.getElementById('userForm').reset();
     });
 
@@ -424,18 +503,15 @@
         const price = parseFloat(document.getElementById('foodPrice').value).toFixed(2);
         const category = document.getElementById('foodCategory').value;
 
-        // Add to Admin Menu Table
         const adminTable = document.getElementById('adminMenuTable').getElementsByTagName('tbody')[0];
         const newAdminRow = adminTable.insertRow();
         newAdminRow.innerHTML = `<td>${id}</td><td>${name}</td><td>Rs. ${price}</td><td>${category}</td><td><button class="btn-delete" onclick="deleteFood(this, '${id}')">Delete</button></td>`;
 
-        // Add to Customer Menu Table
         const custTable = document.getElementById('customerMenuTable').getElementsByTagName('tbody')[0];
         const newCustRow = custTable.insertRow();
         newCustRow.id = `cust-row-${id}`;
         newCustRow.innerHTML = `<td>${id}</td><td>${name}</td><td>Rs. ${price}</td><td>${category}</td>`;
 
-        // Update Order Dropdown
         const itemSelect = document.getElementById('orderItem');
         const option = document.createElement('option');
         option.value = `${name} (Rs. ${price})`;
@@ -453,12 +529,10 @@
         e.preventDefault();
         const item = document.getElementById('orderItem').value;
 
-        // Add to Customer Orders History
         const custOrderTable = document.getElementById('customerOrderTable').getElementsByTagName('tbody')[0];
         const newCustRow = custOrderTable.insertRow();
         newCustRow.innerHTML = `<td>ORD${orderCount}</td><td>${item}</td><td>PENDING</td>`;
 
-        // Add to Admin Orders Monitoring Table
         const adminOrderTable = document.getElementById('adminOrderTable').getElementsByTagName('tbody')[0];
         const newAdminRow = adminOrderTable.insertRow();
         newAdminRow.innerHTML = `<td>ORD${orderCount++}</td><td>${currentUser.id}</td><td>${item}</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
