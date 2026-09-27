@@ -129,6 +129,11 @@
             font-weight: bold;
             margin-top: 10px;
         }
+        .error-msg {
+            color: #ff4757;
+            font-weight: bold;
+            margin-top: 10px;
+        }
         .hidden {
             display: none !important;
         }
@@ -140,6 +145,13 @@
             font-size: 12px;
             font-weight: bold;
         }
+        .demo-credentials {
+            background: #eccc68;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -147,31 +159,32 @@
 <div class="container">
     <header>
         <h1>🍔 Online Food Delivery System</h1>
-        <p id="headerSub">Role-based Access Control System</p>
+        <p id="headerSub">Secure Authentication & Role-based Control</p>
         <button id="logoutBtn" class="logout-btn hidden" onclick="logout()">Logout</button>
     </header>
 
-    <!-- SECTION 1: LOGIN PAGE -->
+    <!-- SECTION 1: SECURE LOGIN PAGE -->
     <div id="loginSection" class="card">
         <h2>System Login</h2>
+
+        <div class="demo-credentials">
+            <strong>🔑 Demo Credentials for Testing / Viva:</strong><br>
+            • <strong>Admin:</strong> Username: <code>admin</code> | Password: <code>admin123</code><br>
+            • <strong>Customer:</strong> Username: <code>U001</code> | Password: <code>123</code>
+        </div>
+
         <form id="loginForm">
             <div class="form-group">
-                <label>Username / User ID:</label>
-                <input type="text" id="loginUser" placeholder="Enter username (e.g. U001 or A001)" required>
+                <label>User ID / Username:</label>
+                <input type="text" id="loginUser" placeholder="Enter User ID (e.g. admin or U001)" required>
             </div>
             <div class="form-group">
                 <label>Password:</label>
                 <input type="password" id="loginPass" placeholder="Enter password" required>
             </div>
-            <div class="form-group">
-                <label>Select Role:</label>
-                <select id="loginRole">
-                    <option value="Customer">Customer</option>
-                    <option value="Admin">Admin</option>
-                </select>
-            </div>
             <button type="submit" class="btn-primary">Login to System</button>
         </form>
+        <div id="loginError" class="error-msg"></div>
     </div>
 
     <!-- SECTION 2: ADMIN DASHBOARD (ADMIN ONLY) -->
@@ -181,12 +194,16 @@
             <h2>Admin: User Management <span class="role-badge">ADMIN</span></h2>
             <form id="userForm">
                 <div class="form-group">
-                    <label>User ID:</label>
-                    <input type="text" id="userId" placeholder="e.g. U002" required>
+                    <label>User ID / Username:</label>
+                    <input type="text" id="userId" placeholder="e.g. U002 or A002" required>
                 </div>
                 <div class="form-group">
-                    <label>Name:</label>
+                    <label>Full Name:</label>
                     <input type="text" id="userName" placeholder="e.g. Nimal Siripala" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="userPass" placeholder="Set user password" required>
                 </div>
                 <div class="form-group">
                     <label>Role:</label>
@@ -199,14 +216,13 @@
             </form>
             <div id="userMsg" class="msg"></div>
 
-            <h3 style="margin-top: 20px;">Registered Users</h3>
+            <h3 style="margin-top: 20px;">Registered Users Database</h3>
             <table id="userTable">
                 <thead>
-                <tr><th>ID</th><th>Name</th><th>Role</th><th>Action</th></tr>
+                <tr><th>User ID</th><th>Name</th><th>Role</th><th>Action</th></tr>
                 </thead>
-                <tbody>
-                <tr><td>U001</td><td>Kamal Perera</td><td>Customer</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
-                <tr><td>A001</td><td>Nimal Admin</td><td>Admin</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
+                <tbody id="userTableBody">
+                <!-- Populated via JS -->
                 </tbody>
             </table>
         </div>
@@ -257,7 +273,7 @@
             <h2>Admin: All Orders Monitoring <span class="role-badge">ADMIN</span></h2>
             <table id="adminOrderTable">
                 <thead>
-                <tr><th>Order ID</th><th>Customer</th><th>Item</th><th>Status</th><th>Action</th></tr>
+                <tr><th>Order ID</th><th>Customer ID</th><th>Item</th><th>Status</th><th>Action</th></tr>
                 </thead>
                 <tbody>
                 <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td></tr>
@@ -299,7 +315,7 @@
             </form>
             <div id="orderMsg" class="msg"></div>
 
-            <h3 style="margin-top: 20px;">My Orders</h3>
+            <h3 style="margin-top: 20px;">My Orders History</h3>
             <table id="customerOrderTable">
                 <thead>
                 <tr><th>Order ID</th><th>Item</th><th>Status</th></tr>
@@ -313,51 +329,92 @@
 </div>
 
 <script>
-    let activeUser = "";
-    let activeRole = "";
+    // Registered Users Database
+    const usersDB = [
+        { id: "admin", name: "System Administrator", pass: "admin123", role: "Admin" },
+        { id: "U001", name: "Kamal Perera", pass: "123", role: "Customer" }
+    ];
 
-    // LOGIN LOGIC
+    let currentUser = null;
+
+    // Render User Table in Admin Panel
+    function renderUserTable() {
+        const tbody = document.getElementById('userTableBody');
+        tbody.innerHTML = '';
+        usersDB.forEach((u, index) => {
+            const row = tbody.insertRow();
+            row.innerHTML = `<td>${u.id}</td><td>${u.name}</td><td>${u.role}</td><td>${u.id === 'admin' ? '<em>System Root</em>' : `<button class="btn-delete" onclick="deleteUser(${index})">Delete</button>`}</td>`;
+        });
+    }
+
+    renderUserTable();
+
+    // AUTHENTICATION & LOGIN LOGIC
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        activeUser = document.getElementById('loginUser').value;
-        activeRole = document.getElementById('loginRole').value;
+        const userInput = document.getElementById('loginUser').value.trim();
+        const passInput = document.getElementById('loginPass').value.trim();
+        const errorDiv = document.getElementById('loginError');
 
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('logoutBtn').classList.remove('hidden');
+        // Verify credentials against Database
+        const foundUser = usersDB.find(u => u.id === userInput && u.pass === passInput);
 
-        if (activeRole === 'Admin') {
-            document.getElementById('adminSection').classList.remove('hidden');
-            document.getElementById('headerSub').innerText = `Logged in as Admin (${activeUser})`;
+        if (foundUser) {
+            currentUser = foundUser;
+            errorDiv.innerText = "";
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+
+            if (currentUser.role === 'Admin') {
+                document.getElementById('adminSection').classList.remove('hidden');
+                document.getElementById('headerSub').innerText = `Logged in as Admin: ${currentUser.name} (${currentUser.id})`;
+            } else {
+                document.getElementById('customerSection').classList.remove('hidden');
+                document.getElementById('headerSub').innerText = `Logged in as Customer: ${currentUser.name} (${currentUser.id})`;
+            }
         } else {
-            document.getElementById('customerSection').classList.remove('hidden');
-            document.getElementById('headerSub').innerText = `Logged in as Customer (${activeUser})`;
+            errorDiv.innerText = "❌ Invalid Username or Password! Please check your credentials.";
         }
     });
 
     // LOGOUT LOGIC
     function logout() {
+        currentUser = null;
         document.getElementById('adminSection').classList.add('hidden');
         document.getElementById('customerSection').classList.add('hidden');
         document.getElementById('logoutBtn').classList.add('hidden');
         document.getElementById('loginSection').classList.remove('hidden');
-        document.getElementById('headerSub').innerText = 'Role-based Access Control System';
+        document.getElementById('headerSub').innerText = 'Secure Authentication & Role-based Control';
         document.getElementById('loginForm').reset();
+        document.getElementById('loginError').innerText = "";
     }
 
-    // ADMIN: REGISTER USER
+    // ADMIN: REGISTER NEW USER WITH PASSWORD
     document.getElementById('userForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const id = document.getElementById('userId').value;
-        const name = document.getElementById('userName').value;
+        const id = document.getElementById('userId').value.trim();
+        const name = document.getElementById('userName').value.trim();
+        const pass = document.getElementById('userPass').value.trim();
         const role = document.getElementById('userRole').value;
 
-        const table = document.getElementById('userTable').getElementsByTagName('tbody')[0];
-        const newRow = table.insertRow();
-        newRow.innerHTML = `<td>${id}</td><td>${name}</td><td>${role}</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
+        // Check if ID already exists
+        if (usersDB.some(u => u.id === id)) {
+            alert("User ID already exists! Please use a unique ID.");
+            return;
+        }
 
-        document.getElementById('userMsg').innerText = `User ${name} registered successfully!`;
+        usersDB.push({ id, name, pass, role });
+        renderUserTable();
+
+        document.getElementById('userMsg').innerText = `User '${name}' (${role}) registered successfully with password!`;
         document.getElementById('userForm').reset();
     });
+
+    // DELETE USER LOGIC
+    function deleteUser(index) {
+        usersDB.splice(index, 1);
+        renderUserTable();
+    }
 
     // ADMIN: ADD FOOD ITEM
     document.getElementById('foodForm').addEventListener('submit', function(e) {
@@ -396,7 +453,7 @@
         e.preventDefault();
         const item = document.getElementById('orderItem').value;
 
-        // Add to Customer Orders Table
+        // Add to Customer Orders History
         const custOrderTable = document.getElementById('customerOrderTable').getElementsByTagName('tbody')[0];
         const newCustRow = custOrderTable.insertRow();
         newCustRow.innerHTML = `<td>ORD${orderCount}</td><td>${item}</td><td>PENDING</td>`;
@@ -404,7 +461,7 @@
         // Add to Admin Orders Monitoring Table
         const adminOrderTable = document.getElementById('adminOrderTable').getElementsByTagName('tbody')[0];
         const newAdminRow = adminOrderTable.insertRow();
-        newAdminRow.innerHTML = `<td>ORD${orderCount++}</td><td>${activeUser}</td><td>${item}</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
+        newAdminRow.innerHTML = `<td>ORD${orderCount++}</td><td>${currentUser.id}</td><td>${item}</td><td>PENDING</td><td><button class="btn-delete" onclick="deleteRow(this)">Delete</button></td>`;
 
         document.getElementById('orderMsg').innerText = `Order placed successfully!`;
     });
