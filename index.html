@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Food Delivery System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            background: #ff4757;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-bottom: 15px;
+            color: #ff4757;
+            border-bottom: 2px solid #f4f6f9;
+            padding-bottom: 8px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #2ed573;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #26af5f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #ff4757;
+            color: white;
+        }
+        .success-msg {
+            color: #2ed573;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🍔 Online Food Delivery System</h1>
+        <p>Interactive Front-end Web Dashboard</p>
+    </header>
+
+    <!-- User Management Section -->
+    <div class="card">
+        <h2>1. User Registration</h2>
+        <form id="userForm">
+            <div class="form-group">
+                <label>User ID:</label>
+                <input type="text" id="userId" placeholder="e.g. U001" required>
+            </div>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" id="userName" placeholder="e.g. Kamal Perera" required>
+            </div>
+            <div class="form-group">
+                <label>Role:</label>
+                <select id="userRole">
+                    <option value="Customer">Customer</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <button type="submit">Register User</button>
+        </form>
+        <div id="userMsg" class="success-msg"></div>
+
+        <h3 style="margin-top: 20px;">Registered Users</h3>
+        <table id="userTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Role</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><td>U001</td><td>Kamal Perera</td><td>Customer</td></tr>
+            <tr><td>A001</td><td>Nimal Admin</td><td>Admin</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="card">
+        <h2>2. Food Menu</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Item ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><td>F001</td><td>Chicken Burger</td><td>Rs. 1200.00</td><td>Main Course</td></tr>
+            <tr><td>F002</td><td>Iced Coffee</td><td>Rs. 450.00</td><td>Beverage</td></tr>
+            <tr><td>F003</td><td>Chocolate Cake</td><td>Rs. 600.00</td><td>Dessert</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Order Section -->
+    <div class="card">
+        <h2>3. Place Order</h2>
+        <form id="orderForm">
+            <div class="form-group">
+                <label>Select User:</label>
+                <select id="orderUser">
+                    <option value="U001 - Kamal Perera">U001 - Kamal Perera</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Select Item:</label>
+                <select id="orderItem">
+                    <option value="Chicken Burger (Rs. 1200)">Chicken Burger (Rs. 1200)</option>
+                    <option value="Iced Coffee (Rs. 450)">Iced Coffee (Rs. 450)</option>
+                    <option value="Chocolate Cake (Rs. 600)">Chocolate Cake (Rs. 600)</option>
+                </select>
+            </div>
+            <button type="submit">Place Order</button>
+        </form>
+        <div id="orderMsg" class="success-msg"></div>
+
+        <h3 style="margin-top: 20px;">Recent Orders</h3>
+        <table id="orderTable">
+            <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Item</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><td>ORD1001</td><td>U001</td><td>Chicken Burger, Iced Coffee</td><td>PENDING</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // User Form Submit Logic
+    document.getElementById('userForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('userId').value;
+        const name = document.getElementById('userName').value;
+        const role = document.getElementById('userRole').value;
+
+        const table = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        newRow.innerHTML = `<td>${id}</td><td>${name}</td><td>${role}</td>`;
+
+        if (role === 'Customer') {
+            const userSelect = document.getElementById('orderUser');
+            const option = document.createElement('option');
+            option.value = `${id} - ${name}`;
+            option.text = `${id} - ${name}`;
+            userSelect.add(option);
+        }
+
+        document.getElementById('userMsg').innerText = `User ${name} registered successfully!`;
+        document.getElementById('userForm').reset();
+    });
+
+    // Order Form Submit Logic
+    let orderCount = 1002;
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const user = document.getElementById('orderUser').value.split(' - ')[0];
+        const item = document.getElementById('orderItem').value;
+
+        const table = document.getElementById('orderTable').getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        newRow.innerHTML = `<td>ORD${orderCount++}</td><td>${user}</td><td>${item}</td><td>PENDING</td>`;
+
+        document.getElementById('orderMsg').innerText = `Order placed successfully!`;
+    });
+</script>
+
+</body>
+</html>
