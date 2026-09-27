@@ -71,6 +71,10 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        input.input-error {
+            border: 2px solid #ff4757;
+            background-color: #ffeae8;
+        }
         button.btn-primary {
             background-color: #ff4757;
             color: white;
@@ -132,7 +136,8 @@
         .error-msg {
             color: #ff4757;
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 5px;
+            font-size: 14px;
         }
         .hidden {
             display: none !important;
@@ -173,7 +178,7 @@
 <div class="container">
     <header>
         <h1>🍔 Online Food Delivery System</h1>
-        <p id="headerSub">Secure Authentication & Role-based Control</p>
+        <p id="headerSub">Secure Authentication & Real-Time Validation</p>
         <button id="logoutBtn" class="logout-btn hidden" onclick="logout()">Logout</button>
     </header>
 
@@ -212,6 +217,7 @@
             <div class="form-group">
                 <label>Choose User ID / Username:</label>
                 <input type="text" id="regUser" placeholder="e.g. U002" required>
+                <div id="liveUserError" class="error-msg"></div>
             </div>
             <div class="form-group">
                 <label>Full Name:</label>
@@ -221,7 +227,7 @@
                 <label>Choose Password:</label>
                 <input type="password" id="regPass" placeholder="Enter password" required>
             </div>
-            <button type="submit" class="btn-action" style="width: 100%; padding: 10px; font-size: 16px;">Create Customer Account</button>
+            <button type="submit" id="regSubmitBtn" class="btn-action" style="width: 100%; padding: 10px; font-size: 16px;">Create Customer Account</button>
         </form>
         <div id="regMsg" class="msg"></div>
 
@@ -393,6 +399,38 @@
         document.getElementById('regMsg').innerText = "";
     }
 
+    // REAL-TIME USER ID VALIDATION (BEFORE CLICKING BUTTON)
+    const regUserInput = document.getElementById('regUser');
+    const liveUserError = document.getElementById('liveUserError');
+    const regSubmitBtn = document.getElementById('regSubmitBtn');
+
+    regUserInput.addEventListener('input', function() {
+        const inputId = this.value.trim();
+        if (inputId === '') {
+            liveUserError.innerText = '';
+            regUserInput.classList.remove('input-error');
+            regSubmitBtn.disabled = false;
+            return;
+        }
+
+        const isDuplicate = usersDB.some(u => u.id.toLowerCase() === inputId.toLowerCase());
+        if (isDuplicate) {
+            liveUserError.innerText = '❌ User ID already taken! Please choose another.';
+            liveUserError.style.color = '#ff4757';
+            regUserInput.classList.add('input-error');
+            regSubmitBtn.disabled = true;
+            regSubmitBtn.style.opacity = '0.5';
+            regSubmitBtn.style.cursor = 'not-allowed';
+        } else {
+            liveUserError.innerText = '✓ User ID is available';
+            liveUserError.style.color = '#2ed573';
+            regUserInput.classList.remove('input-error');
+            regSubmitBtn.disabled = false;
+            regSubmitBtn.style.opacity = '1';
+            regSubmitBtn.style.cursor = 'pointer';
+        }
+    });
+
     // Render User Table in Admin Panel
     function renderUserTable() {
         const tbody = document.getElementById('userTableBody');
@@ -412,7 +450,7 @@
         const name = document.getElementById('regName').value.trim();
         const pass = document.getElementById('regPass').value.trim();
 
-        if (usersDB.some(u => u.id === id)) {
+        if (usersDB.some(u => u.id.toLowerCase() === id.toLowerCase())) {
             alert("User ID already exists! Please choose a different User ID.");
             return;
         }
@@ -420,8 +458,9 @@
         usersDB.push({ id, name, pass, role: "Customer" });
         renderUserTable();
 
-        document.getElementById('regMsg').innerText = `Registration successful! You can now login as ${id}.`;
+        document.getElementById('regMsg').innerText = `Registration successful! Redirecting to login...`;
         document.getElementById('customerRegisterForm').reset();
+        liveUserError.innerText = '';
 
         setTimeout(() => {
             showLoginForm();
@@ -464,7 +503,7 @@
         document.getElementById('customerSection').classList.add('hidden');
         document.getElementById('logoutBtn').classList.add('hidden');
         document.getElementById('loginSection').classList.remove('hidden');
-        document.getElementById('headerSub').innerText = 'Secure Authentication & Role-based Control';
+        document.getElementById('headerSub').innerText = 'Secure Authentication & Real-Time Validation';
         document.getElementById('loginForm').reset();
         document.getElementById('loginError').innerText = "";
     }
@@ -477,7 +516,7 @@
         const pass = document.getElementById('userPass').value.trim();
         const role = document.getElementById('userRole').value;
 
-        if (usersDB.some(u => u.id === id)) {
+        if (usersDB.some(u => u.id.toLowerCase() === id.toLowerCase())) {
             alert("User ID already exists! Please use a unique ID.");
             return;
         }
